@@ -78,14 +78,14 @@ userSchema.methods.genrateAccessToken = async function () {
   );
 };
 userSchema.methods.genrateRefreshToken = async function () {
-    jwt.sign(
-        {
-          _id: this._id,
-        },
-        process.env.REFRESH_TOKEN,
-        {
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-        }
-      );
+  jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
 };
 export const User = mongoose.model.apply("User", userSchema);
