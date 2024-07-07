@@ -40,4 +40,4 @@ required:true
 
 mongoose.plugin(mongooseAggregatePaginate)
 // we can write aggregate queries now
-export const Video = mongoose.model.apply("Video", videoSchema);
+export const Video = mongoose.model("Video", videoSchema);

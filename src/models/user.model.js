@@ -55,7 +55,7 @@ const userSchema = new Schema(
 // hashing password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 // compairing  password
@@ -88,4 +88,4 @@ userSchema.methods.genrateRefreshToken = async function () {
     }
   );
 };
-export const User = mongoose.model.apply("User", userSchema);
+ export const User = mongoose.model("User", userSchema);
