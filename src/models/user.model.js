@@ -63,7 +63,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.genrateAccessToken = async function () {
+userSchema.methods.genrateAccessToken = async function (_id) {
   jwt.sign(
     {
       _id: this._id,
@@ -77,7 +77,7 @@ userSchema.methods.genrateAccessToken = async function () {
     }
   );
 };
-userSchema.methods.genrateRefreshToken = async function () {
+userSchema.methods.genrateRefreshToken = async function (_id) {
   jwt.sign(
     {
       _id: this._id,
@@ -88,4 +88,4 @@ userSchema.methods.genrateRefreshToken = async function () {
     }
   );
 };
- export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);
