@@ -7,11 +7,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const genrateAccessTokenAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
-    const accessToken = user.genrateAccessToken();
-    const refreshToken = user.genrateRefreshToken();
+    const accessToken = await user.genrateAccessToken(user._id);
+    const refreshToken =  await user.genrateRefreshToken(user._id);
     user.refreshToken = refreshToken;
-    user.save({ validateBeforeSave: false });
-
+   await  user.save({ validateBeforeSave: false }); 
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
@@ -155,11 +154,11 @@ const logoutUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
-  };
-
+  };  
+  
   return res
     .status(200)
-    .clearCookie("accessToken", options)
+    .clearCookie("accessToken",options)
     .clearCookie("refreshToken", options)
     .json(200, {}, "User logged out successfully");
 });
