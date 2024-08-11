@@ -49,18 +49,19 @@ const registerUser = asyncHandler(async (req, res) => {
   // if (!avatarLocalpath) {
   //   throw new ApiError(409, "avatar file is required");
   // }
-  const avatarLocalPath = req.files?.avatar?.[0]?.path;
 
+  
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required");
   }
-
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   // Upload cover image only if it exists
-  let coverImage = null;
-  if (req.files?.coverImage?.[0]?.path) {
-    coverImage = await uploadOnCloudinary(req.files.coverImage[0].path);
+  let coverImage=null;
+  let coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+  if (coverImageLocalPath) {
+    coverImage = await uploadOnCloudinary(coverImageLocalPath);
   }
 
   // const avatar  = await uploadOnCloudinary(avatarLocalpath);
@@ -237,7 +238,7 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 // get user data
 const getCurrentUser = asyncHandler(async(req, res) => {
-  console.log(req.user);
+  
   
   return res
   .status(200)
