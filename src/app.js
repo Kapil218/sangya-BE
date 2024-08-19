@@ -1,29 +1,63 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import { limiter } from "./middlewares/rateLimit.middleware.js";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
+import hpp from "hpp";
 const app = express();
 
+// Adds security headers
+app.use(helmet());
+
+// Rate limits API requests
+app.use("/api", limiter);
+
+// Enables CORS with specified origin and credentials
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
-// this will allow all urls to perform all methods on server like GET , PUT, DELETE, UPDATE etc
-// by default cookies are blocked in browser we have to set credentials to true to use cookies.
 
-// app.use(cors({origin:"127.0.0.1:5000",credentials:true,
-//     methods:["GET","POST"]
-// }))
-
+// Parses JSON requests (limit: 16kb)
 app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ limit: "16kb" }));
+
+// Parses URL-encoded data (limit: 16kb, no nested objects)
+app.use(express.urlencoded({ limit: "16kb", extended: false }));
+
+// Sanitizes data to prevent NoSQL injection
+app.use(mongoSanitize());
+
+// Prevents XSS attacks by cleaning user input
+app.use(xss());
+
+// Prevents HTTP Parameter Pollution
+app.use(
+  hpp({
+    whitelist: [], // Specify allowed duplicate params here
+  })
+);
+
+// Serves static files from "public"
 app.use(express.static("public"));
+
+// Parses cookies from requests
 app.use(cookieParser());
 
 // routes import
 import userRouter from "./routes/user.routes.js";
 import videoRoute from "./routes/video.routes.js";
 import commentRouter from "./routes/comment.routes.js";
-// routes declaration
+
+// Declares routes for users, videos, and comments
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRoute);
 app.use("/api/v1/comments", commentRouter);
+
+// unhandled routes
+app.all("*", (req, res, next) => {
+  return res.status(404).json({
+    success: "fail",
+    message: `Can't find the ${req.originalUrl}   page on this server`,
+  });
+});
 
 export { app };
