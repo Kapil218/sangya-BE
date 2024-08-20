@@ -46,11 +46,13 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import videoRoute from "./routes/video.routes.js";
 import commentRouter from "./routes/comment.routes.js";
+import likeRoute from "./routes/like.routes.js";
 
 // Declares routes for users, videos, and comments
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRoute);
 app.use("/api/v1/comments", commentRouter);
+app.use("/api/v1/likes", likeRoute);
 
 // unhandled routes
 app.all("*", (req, res, next) => {

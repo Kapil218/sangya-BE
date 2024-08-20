@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Video } from "../models/video.model.js";
-import { response } from "express";
 
 const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
@@ -74,9 +73,9 @@ const addComment = asyncHandler(async (req, res) => {
   }
 
   const comment = await Comment.create({
-    owner: req.user,
+    owner: req.user._id,
     content: content,
-    video: video,
+    video: video._id,
   });
 
   return res
