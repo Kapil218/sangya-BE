@@ -26,6 +26,8 @@ const genrateAccessTokenAndRefreshToken = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
   // getting data from frontend
   const { username, email, password, fullName } = req.body;
+  console.log("Request Body:", req.body);
+  console.log("Request Files:", req.files);
 
   // validation check
   if (
@@ -51,10 +53,17 @@ const registerUser = asyncHandler(async (req, res) => {
   // }
 
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar file is required");
+  // if (!avatarLocalPath) {
+  //   throw new ApiError(400, "Avatar file is required"); **uncommmnet for avatar
+  // }
+  let avatar = { url: "" };
+  console.log(avatarLocalPath);
+
+  if (avatarLocalPath) {
+    // console.log("ssssssssssssssssssssss");
+
+    avatar = await uploadOnCloudinary(avatarLocalPath);
   }
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   // Upload cover image only if it exists
   let coverImage = null;
@@ -76,7 +85,8 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     username: username.toLowerCase(),
     password,
-    avatar: avatar.url,
+    avatar: avatar.url || "no defined",
+
     coverImage: coverImage?.url || "",
   });
   const createdUser = await User.findById(user._id).select(
