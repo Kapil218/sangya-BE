@@ -15,6 +15,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
   // Fetch videos with pagination, sorted by latest updated first
   const videos = await Video.find()
+    .populate({ path: "owner", select: "fullName username avatar" })
     .sort({ updatedAt: -1 }) // Sort by latest updated first
     .skip(skip) // Pagination
     .limit(itemsPerPage); // Limit results per page
@@ -211,7 +212,10 @@ const myVideosController = asyncHandler(async (req, res) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  const videos = await Video.find({ owner: user._id });
+  const videos = await Video.find({ owner: user._id }).populate({
+    path: "owner",
+    select: "fullName username avatar",
+  });
   res.status(200).json({ data: { videos } });
 });
 export {
