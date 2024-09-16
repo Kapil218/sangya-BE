@@ -18,6 +18,7 @@ router
   .route("/")
   .get(getAllVideos)
   .post(
+    verifyJWT,
     upload.fields([
       {
         name: "videoFile",
@@ -31,7 +32,7 @@ router
     publishAVideo
   );
 
-router.route("/myVideos").get(myVideosController);
+router.route("/myVideos").get(verifyJWT, myVideosController);
 router
   .route("/:videoId")
   .get(getVideoById)
