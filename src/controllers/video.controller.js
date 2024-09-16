@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, generateVideoUrls } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
   //TODO: get all videos based on query, sort, pagination
@@ -38,28 +38,31 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
-  // validation check
-  if ([title, description].some((field) => field?.trim == "")) {
+  // Validation check
+  if ([title, description].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
-  //   uploading video
+  // Uploading video
   const videoLocalPath = req.files?.videoFile?.[0]?.path;
-
   if (!videoLocalPath) {
-    throw new ApiError(400, "video file is required");
+    throw new ApiError(400, "Video file is required");
   }
-  const videoFile = await uploadOnCloudinary(videoLocalPath);
-  // uploading thumbnail
+  const videoFile = await uploadOnCloudinary(videoLocalPath, "video");
+
+  // Uploading thumbnail
   const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
-
   if (!thumbnailLocalPath) {
-    throw new ApiError(400, "thumbnail file is required");
+    throw new ApiError(400, "Thumbnail file is required");
   }
-  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath, "image");
 
+  // Generate URLs for different video qualities
+  const videoUrls = generateVideoUrls(videoFile.public_id);
+
+  // Save video details to the database
   const video = await Video.create({
-    videoFile: videoFile.url,
+    videoFile: videoUrls, // Store URLs for different qualities
     thumbnail: thumbnail.url,
     duration: videoFile.duration,
     description,
@@ -69,7 +72,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, video, "video posted successfully"));
+    .json(new ApiResponse(201, video, "Video posted successfully"));
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
