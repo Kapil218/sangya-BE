@@ -477,6 +477,13 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       )
     );
 });
+export const getUserDetails = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorised" });
+  }
+  return res.status(200).json({ data: user });
+});
 
 export {
   registerUser,
