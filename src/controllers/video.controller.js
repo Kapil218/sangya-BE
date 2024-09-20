@@ -7,26 +7,34 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, generateVideoUrls } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  //TODO: get all videos based on query, sort, pagination
   let page = Number(req.query.page) || 1;
   let itemsPerPage = Number(req.query.itemsPerPage) || 10;
+  let search = req.query.search || ""; // Capture the search query if available
 
   let skip = (page - 1) * itemsPerPage;
 
+  // Create a search condition based on the search query
+  let searchCondition = {
+    $or: [
+      { title: { $regex: search, $options: "i" } }, // case-insensitive search in title
+      { description: { $regex: search, $options: "i" } }, // case-insensitive search in description
+    ],
+  };
+
   // Fetch videos with pagination, sorted by latest updated first
-  const videos = await Video.find()
+  const videos = await Video.find(searchCondition)
     .populate({ path: "owner", select: "fullName username avatar" })
     .sort({ updatedAt: -1 }) // Sort by latest updated first
     .skip(skip) // Pagination
     .limit(itemsPerPage); // Limit results per page
 
   // Calculate the total number of videos
-  const totalVideos = await Video.countDocuments();
+  const totalVideos = await Video.countDocuments(searchCondition);
 
   // Calculate the total number of pages
   const totalPages = Math.ceil(totalVideos / itemsPerPage);
 
-  // Respond with the paginated results
+  // Respond with the paginated and filtered results
   res.status(200).json({
     totalVideos,
     page: page,
