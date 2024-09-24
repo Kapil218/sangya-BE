@@ -77,7 +77,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 
   const subscriptions = await Subscription.find({
     subscriber: subscriberId,
-  });
+  }).populate({ path: "channel", select: "username avatar" });
 
   const channels = subscriptions;
 

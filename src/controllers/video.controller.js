@@ -89,7 +89,10 @@ const getVideoById = asyncHandler(async (req, res) => {
   if (!videoId?.trim()) {
     throw new ApiError(400, "videoid is missing");
   }
-  const video = await Video.findById(videoId);
+  const video = await Video.findById(videoId).populate({
+    path: "owner",
+    select: "fullName username avatar",
+  });
   if (!video) {
     throw new ApiError(401, "video can't be fetched");
   }
