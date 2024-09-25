@@ -1,6 +1,7 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
+import { Subscription } from "../models/subscription.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -231,6 +232,23 @@ const myVideosController = asyncHandler(async (req, res) => {
     select: "fullName username avatar",
   });
   res.status(200).json({ data: { videos } });
+});
+
+export const subsVideoController = asyncHandler(async (req, res) => {
+  const userID = req.user._id;
+  // console.log(req.user);
+  const subs = await Subscription.find({ subscriber: userID });
+  const subChannelIDs = subs.map((sub) => sub.channel);
+  if (subChannelIDs.length === 0) {
+    return res.status(200).json({ videos: [] });
+  }
+  const videos = await Video.find({
+    owner: { $in: subChannelIDs },
+    isPublished: true,
+  })
+    .populate({ path: "owner", select: "fullName username avatar" })
+    .sort({ createdAt: -1 });
+  res.status(200).json({ length: videos.length, videos });
 });
 export {
   getAllVideos,
