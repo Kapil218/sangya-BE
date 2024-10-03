@@ -17,7 +17,12 @@ app.use("/api", limiter);
 // Enables CORS with specified origin and credentials
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://192.168.0.102:5173",
+      // "192.168.0.102:5173",
+    ],
     // origin: process.env.CORS_URL,
     credentials: true,
   })
