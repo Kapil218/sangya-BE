@@ -132,6 +132,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.MAKE_COOKIE_SECURE,
+    sameSite: "None",
   };
 
   return res
