@@ -25,6 +25,11 @@ const getVideoComments = asyncHandler(async (req, res) => {
       },
     },
     {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
       $project: {
         content: 1,
         "owner.username": 1,

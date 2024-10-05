@@ -250,6 +250,26 @@ export const subsVideoController = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 });
   res.status(200).json({ length: videos.length, videos });
 });
+
+export const getVideoSuggestions = asyncHandler(async (req, res) => {
+  const { searchQuery } = req.query;
+  if (searchQuery === "" || searchQuery === undefined) {
+    return res.status(200).json({ titles: [] });
+  }
+  const searchCondition = {
+    $or: [
+      { title: { $regex: searchQuery, $options: "i" } }, // case-insensitive search in title
+      { description: { $regex: searchQuery, $options: "i" } }, // case-insensitive search in description
+    ],
+  };
+  const videos = await Video.find(searchCondition);
+
+  // Map to extract only titles
+  const titles = videos.map((video) => video.title);
+
+  // Return the results
+  res.status(200).json({ titles });
+});
 export {
   getAllVideos,
   publishAVideo,
