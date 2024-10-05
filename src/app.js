@@ -17,7 +17,11 @@ app.use("/api", limiter);
 // Enables CORS with specified origin and credentials
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://192.168.0.102:5173",
+    ],
     // origin: process.env.CORS_URL,
     credentials: true,
   })
@@ -53,6 +57,7 @@ import userRouter from "./routes/user.routes.js";
 import videoRoute from "./routes/video.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import likeRoute from "./routes/like.routes.js";
+import dislikeRoute from "./routes/dislike.route.js";
 import subscriptionRoute from "./routes/subscription.routes.js";
 import playlistRoute from "./routes/playlist.routes.js";
 
@@ -61,6 +66,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRoute);
 app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/likes", likeRoute);
+app.use("/api/v1/dislikes", dislikeRoute);
 app.use("/api/v1/subscriptions", subscriptionRoute);
 app.use("/api/v1/playlists", playlistRoute);
 
