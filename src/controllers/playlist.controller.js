@@ -58,7 +58,13 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid user ID");
   }
 
-  const playlists = await Playlist.find({ owner: userId }).populate("videos");
+  const playlists = await Playlist.find({ owner: userId }).populate({
+    path: "videos",
+    populate: {
+      path: "owner",
+      model: "User",
+    },
+  });
 
   return res
     .status(200)

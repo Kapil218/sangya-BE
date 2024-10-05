@@ -126,4 +126,13 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     );
 });
 
+export const isVideoLiked = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  const f = await Like.findOne({
+    likedBy: req.user._id,
+    video: videoId,
+  });
+
+  return res.status(200).json({ isLiked: f ? true : false });
+});
 export { toggleCommentLike, toggleVideoLike, getLikedVideos };
