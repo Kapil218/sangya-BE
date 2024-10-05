@@ -31,6 +31,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
         "owner.avatar": 1,
         "owner.fullName": 1,
         totalComments: 1,
+        createdAt: 1,
       },
     },
     {
@@ -50,7 +51,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { totalComments: comments.length, data: comments },
+        { totalComments: comments.length, comments: comments },
         "comments fetched successfully"
       )
     );
