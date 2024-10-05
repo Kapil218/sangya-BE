@@ -21,6 +21,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       "http://192.168.0.102:5173",
+      "https://sangya.web.app:3000",
     ],
     // origin: process.env.CORS_URL,
     credentials: true,
