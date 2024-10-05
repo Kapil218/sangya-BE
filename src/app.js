@@ -6,6 +6,7 @@ import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
 import hpp from "hpp";
+
 const app = express();
 
 // Adds security headers
@@ -21,12 +22,26 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       "http://192.168.0.102:5173",
-      "https://sangya.web.app:3000",
+      "https://sangya.web.app",
     ],
-    // origin: process.env.CORS_URL,
     credentials: true,
   })
 );
+
+// Middleware to add custom headers for CORS
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Parses JSON requests (limit: 16kb)
 app.use(express.json({ limit: "16kb" }));
@@ -75,7 +90,7 @@ app.use("/api/v1/playlists", playlistRoute);
 app.all("*", (req, res, next) => {
   return res.status(404).json({
     success: "fail",
-    message: `Can't find the ${req.originalUrl}   page on this server`,
+    message: `Can't find the ${req.originalUrl} page on this server`,
   });
 });
 
