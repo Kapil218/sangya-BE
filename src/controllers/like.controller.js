@@ -75,57 +75,6 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
   }
 });
 
-// const getLikedVideos = asyncHandler(async (req, res) => {
-//   //TODO: get all liked videos
-
-//   const likedVideos = await Like.aggregate([
-//     {
-//       $lookup: {
-//         from: "users",
-//         localField: "likedBy",
-//         foreignField: "_id",
-//         as: "likedBy",
-//       },
-//     },
-
-//     {
-//       $unwind: "$likedBy",
-//     },
-//     {
-//       $match: {
-//         "likedBy._id": req.user._id,
-//         video: { $type: "objectId" },
-//       },
-//     },
-//     {
-//       $lookup: {
-//         from: "videos",
-//         localField: "video",
-//         foreignField: "_id",
-//         as: "video",
-//       },
-//     },
-
-//     {
-//       $unwind: "$video",
-//     },
-//     {
-//       $project: {
-//         "likedBy.username": 1,
-//         "likedBy.avatar": 1,
-//         "likedBy.fullName": 1,
-//         video: 1,
-//       },
-//     },
-//   ]);
-
-//   return res
-//     .status(200)
-//     .json(
-//       new ApiResponse(200, likedVideos, "liked videos fetched successfully")
-//     );
-// });
-
 const getLikedVideos = asyncHandler(async (req, res) => {
   //TODO: get all liked videos
 

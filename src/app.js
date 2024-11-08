@@ -6,7 +6,14 @@ import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
 import hpp from "hpp";
-
+import userRouter from "./routes/user.routes.js";
+import videoRoute from "./routes/video.routes.js";
+import commentRouter from "./routes/comment.routes.js";
+import likeRoute from "./routes/like.routes.js";
+import dislikeRoute from "./routes/dislike.route.js";
+import subscriptionRoute from "./routes/subscription.routes.js";
+import playlistRoute from "./routes/playlist.routes.js";
+import historyRoute from "./routes/history.routes.js";
 const app = express();
 
 // Adds security headers
@@ -69,13 +76,6 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // routes import
-import userRouter from "./routes/user.routes.js";
-import videoRoute from "./routes/video.routes.js";
-import commentRouter from "./routes/comment.routes.js";
-import likeRoute from "./routes/like.routes.js";
-import dislikeRoute from "./routes/dislike.route.js";
-import subscriptionRoute from "./routes/subscription.routes.js";
-import playlistRoute from "./routes/playlist.routes.js";
 
 // Declares routes for users, videos, and comments
 app.use("/api/v1/users", userRouter);
@@ -85,6 +85,7 @@ app.use("/api/v1/likes", likeRoute);
 app.use("/api/v1/dislikes", dislikeRoute);
 app.use("/api/v1/subscriptions", subscriptionRoute);
 app.use("/api/v1/playlists", playlistRoute);
+app.use("/api/v1/watchHistory", historyRoute);
 
 // unhandled routes
 app.all("*", (req, res, next) => {
