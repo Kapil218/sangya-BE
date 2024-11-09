@@ -270,6 +270,21 @@ export const getVideoSuggestions = asyncHandler(async (req, res) => {
   // Return the results
   res.status(200).json({ titles });
 });
+
+const addView = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+  const video = await Video.findById(videoId);
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+  video.views += 1;
+  await video.save();
+  res.status(200).json({ message: "View added successfully" });
+});
+
 export {
   getAllVideos,
   publishAVideo,
@@ -278,4 +293,5 @@ export {
   deleteVideo,
   togglePublishStatus,
   myVideosController,
+  addView,
 };

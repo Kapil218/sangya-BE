@@ -9,6 +9,7 @@ import {
   myVideosController,
   subsVideoController,
   getVideoSuggestions,
+  addView,
 } from "../controllers/video.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -42,5 +43,7 @@ router
   .delete(deleteVideo)
   .patch(upload.single("thumbnail"), updateVideo);
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+
+router.route("/addView/:videoId").patch(addView); // Add view to a video
 
 export default router;
