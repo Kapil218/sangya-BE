@@ -14,6 +14,9 @@ import dislikeRoute from "./routes/dislike.route.js";
 import subscriptionRoute from "./routes/subscription.routes.js";
 import playlistRoute from "./routes/playlist.routes.js";
 import historyRoute from "./routes/history.routes.js";
+import streamRouter from "./routes/videoStream.route.js";
+import bodyParser from "body-parser";
+
 const app = express();
 
 // Adds security headers
@@ -28,6 +31,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
+      "http://192.168.0.101:5173",
       "https://sangya.web.app",
     ],
     credentials: true,
@@ -54,7 +58,8 @@ app.use(express.json({ limit: "16kb" }));
 
 // Parses URL-encoded data (limit: 16kb, no nested objects)
 app.use(express.urlencoded({ limit: "16kb", extended: false }));
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // Sanitizes data to prevent NoSQL injection
 app.use(mongoSanitize());
 
@@ -85,6 +90,7 @@ app.use("/api/v1/dislikes", dislikeRoute);
 app.use("/api/v1/subscriptions", subscriptionRoute);
 app.use("/api/v1/playlists", playlistRoute);
 app.use("/api/v1/watchHistory", historyRoute);
+app.use("/api/v1/stream", streamRouter);
 
 // unhandled routes
 app.all("*", (req, res, next) => {
