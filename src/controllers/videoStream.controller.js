@@ -23,7 +23,9 @@ export async function getRtpCapabilities(req, res) {
 export async function createTransport(req, res) {
   try {
     producerTransport = await router.createWebRtcTransport({
-      listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
+      listenIps: [
+        { ip: "0.0.0.0", announcedIp: "https://backend-sangya.onrender.com" },
+      ],
       enableUdp: true,
       enableTcp: true,
       preferUdp: true,
@@ -104,7 +106,9 @@ export async function startProduce(req, res) {
 export async function createConsumerTransport(req, res) {
   try {
     const consumerTransport = await router.createWebRtcTransport({
-      listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
+      listenIps: [
+        { ip: "0.0.0.0", announcedIp: "https://backend-sangya.onrender.com" },
+      ],
       enableUdp: true,
       enableTcp: true,
       preferUdp: true,
