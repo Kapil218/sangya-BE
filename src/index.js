@@ -1,13 +1,26 @@
+import ffmpegPath from "ffmpeg-static"; // Add this line
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
-import http from "http"; // For creating an HTTP server
-import cors from "cors"; // Import CORS
-// const NodeMediaServer = require("node-media-server");
-// import pkg from "node-media-server";
-// const { NodeMediaServer } = pkg;
+import http from "http";
+import cors from "cors";
 import NodeMediaServer from "node-media-server";
 
+// Check if ffmpegPath is resolved
+if (!ffmpegPath) {
+  console.error(
+    "❌ Could not find ffmpeg. Make sure ffmpeg-static is installed."
+  );
+  process.exit(1);
+}
+console.log(`🔍 FFmpeg is located at: ${ffmpegPath}`);
+
+// Load environment variables
+dotenv.config({
+  path: "./.env",
+});
+
+// Configuration for NodeMediaServer
 const httpConfig = {
   port: 8080,
   allow_origin: "*",
@@ -23,7 +36,7 @@ const rtmpConfig = {
 };
 
 const transformationConfig = {
-  ffmpeg: process.env.FFMPEG_PATH,
+  ffmpeg: ffmpegPath, // Use the resolved ffmpeg-static path
   tasks: [
     {
       app: "live",
@@ -41,14 +54,10 @@ const config = {
   trans: transformationConfig,
 };
 
-dotenv.config({
-  path: "./.env",
-});
-
 // Enable CORS for localhost:5173
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://192.168.0.101:5173"], // Allow requests from this origin
+    origin: ["http://localhost:5173", "http://192.168.0.101:5173"],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
