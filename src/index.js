@@ -1,59 +1,9 @@
-import ffmpegPath from "ffmpeg-static"; // Add this line
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
 import http from "http";
 import cors from "cors";
-import NodeMediaServer from "node-media-server";
-
-// Check if ffmpegPath is resolved
-// if (!ffmpegPath) {
-//   console.error(
-//     "❌ Could not find ffmpeg. Make sure ffmpeg-static is installed."
-//   );
-//   process.exit(1);
-// }
-// console.log(`🔍 FFmpeg is located at: ${ffmpegPath}`);
-
-// Load environment variables
-dotenv.config({
-  path: "./.env",
-});
-
-// Configuration for NodeMediaServer
-const httpConfig = {
-  port: 8080,
-  allow_origin: "*",
-  mediaroot: "./media",
-};
-
-const rtmpConfig = {
-  port: 1935,
-  chunk_size: 60000,
-  gop_cache: true,
-  ping: 10,
-  ping_timeout: 60,
-};
-
-const transformationConfig = {
-  ffmpeg: ffmpegPath, // Use the resolved ffmpeg-static path
-  // ffmpeg: "./ffmpeg/ffmpeg.exe",
-  tasks: [
-    {
-      app: "live",
-      hls: true,
-      hlsFlags: "[hls_time=2:hls_list_size=3:hls_flags=delete_segments]",
-      hlsKeep: false,
-    },
-  ],
-  MediaRoot: "./media",
-};
-
-const config = {
-  http: httpConfig,
-  rtmp: rtmpConfig,
-  trans: transformationConfig,
-};
+import { Server } from "socket.io";
 
 // Enable CORS for localhost:5173
 app.use(
@@ -67,13 +17,64 @@ app.use(
 // Create an HTTP server to work alongside Express app
 const server = http.createServer(app);
 
+const io = new Server(server, {
+  cors: {
+    origin: ["https://web-apps-732ac.web.app", "http://192.168.0.101:5173"], // Allow your frontend and local network IP
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+const streams = {}; // Store stream info
+
+// Handle Socket.IO connections
+io.on("connection", (socket) => {
+  console.log("New user connected:", socket.id);
+
+  // Handle WebRTC signaling
+  socket.on("offer", (offer, room) => {
+    console.log(`Offer received from ${socket.id} for room ${room}`);
+    console.log("Offer:", offer);
+    streams[room] = { offer, socketId: socket.id }; // Store stream info
+    console.log(`Stream started by ${socket.id} in room ${room}`); // Log stream info
+    socket.to(room).emit("offer", offer);
+  });
+
+  socket.on("answer", (answer, room) => {
+    console.log(`Answer received from ${socket.id} for room ${room}`);
+    console.log("Answer:", answer);
+    socket.to(room).emit("answer", answer);
+  });
+
+  socket.on("ice-candidate", (candidate, room) => {
+    console.log(`ICE candidate received from ${socket.id} for room ${room}`);
+    console.log("ICE Candidate:", candidate);
+    socket.to(room).emit("ice-candidate", candidate);
+  });
+
+  // Room handling
+  socket.on("join-room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room ${room}`);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log(`Socket ${socket.id} disconnected:`, reason);
+    // Remove stream info if the streamer disconnects
+    for (const room in streams) {
+      if (streams[room].socketId === socket.id) {
+        delete streams[room];
+        socket.to(room).emit("stream-ended", "Streamer has disconnected");
+      }
+    }
+  });
+});
+
 connectDB()
   .then(() => {
     server.listen(process.env.PORT || 8000, "0.0.0.0", () => {
       console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
     });
-    const nms = new NodeMediaServer(config);
-    nms.run();
   })
   .catch((err) => {
     console.log("MONGO db connection failed !!! ", err);
