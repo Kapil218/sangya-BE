@@ -7,13 +7,13 @@ import cors from "cors";
 import NodeMediaServer from "node-media-server";
 
 // Check if ffmpegPath is resolved
-if (!ffmpegPath) {
-  console.error(
-    "❌ Could not find ffmpeg. Make sure ffmpeg-static is installed."
-  );
-  process.exit(1);
-}
-console.log(`🔍 FFmpeg is located at: ${ffmpegPath}`);
+// if (!ffmpegPath) {
+//   console.error(
+//     "❌ Could not find ffmpeg. Make sure ffmpeg-static is installed."
+//   );
+//   process.exit(1);
+// }
+// console.log(`🔍 FFmpeg is located at: ${ffmpegPath}`);
 
 // Load environment variables
 dotenv.config({
