@@ -4,6 +4,8 @@ import { app } from "./app.js";
 import http from "http"; // For creating an HTTP server
 import cors from "cors"; // Import CORS
 // const NodeMediaServer = require("node-media-server");
+// import pkg from "node-media-server";
+// const { NodeMediaServer } = pkg;
 import NodeMediaServer from "node-media-server";
 
 const httpConfig = {
@@ -39,9 +41,6 @@ const config = {
   trans: transformationConfig,
 };
 
-const nms = new NodeMediaServer(config);
-nms.run();
-
 dotenv.config({
   path: "./.env",
 });
@@ -63,6 +62,8 @@ connectDB()
     server.listen(process.env.PORT || 8000, "0.0.0.0", () => {
       console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
     });
+    const nms = new NodeMediaServer(config);
+    nms.run();
   })
   .catch((err) => {
     console.log("MONGO db connection failed !!! ", err);
