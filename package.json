@@ -34,7 +34,7 @@
     "mongoose": "^8.4.3",
     "mongoose-aggregate-paginate-v2": "^1.1.0",
     "multer": "^1.4.5-lts.1",
-    "node-media-server": "^1.2.7",
+    "node-media-server": "^2.2.2",
     "node-pre-gyp": "^0.17.0",
     "sdp-transform": "^2.14.1",
     "socket.io": "^4.5.3",
