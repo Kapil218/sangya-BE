@@ -14,8 +14,9 @@ import dislikeRoute from "./routes/dislike.route.js";
 import subscriptionRoute from "./routes/subscription.routes.js";
 import playlistRoute from "./routes/playlist.routes.js";
 import historyRoute from "./routes/history.routes.js";
-import streamRouter from "./routes/videoStream.route.js";
+
 import bodyParser from "body-parser";
+import multer from "multer";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(helmet());
 // Rate limits API requests
 app.use("/api", limiter);
 
+const upload = multer({ dest: "uploads/" });
 // Enables CORS with specified origin and credentials
 app.use(
   cors({
@@ -90,7 +92,6 @@ app.use("/api/v1/dislikes", dislikeRoute);
 app.use("/api/v1/subscriptions", subscriptionRoute);
 app.use("/api/v1/playlists", playlistRoute);
 app.use("/api/v1/watchHistory", historyRoute);
-app.use("/api/v1/stream", streamRouter);
 
 // unhandled routes
 app.all("*", (req, res, next) => {
