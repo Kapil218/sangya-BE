@@ -1,4 +1,4 @@
-// import ffmpegPath from "ffmpeg-static"; // Add this line
+import ffmpegPath from "ffmpeg-static"; // Add this line
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
@@ -36,8 +36,8 @@ const rtmpConfig = {
 };
 
 const transformationConfig = {
-  // ffmpeg: ffmpegPath, // Use the resolved ffmpeg-static path
-  ffmpeg: "./ffmpeg/ffmpeg.exe",
+  ffmpeg: ffmpegPath, // Use the resolved ffmpeg-static path
+  // ffmpeg: "./ffmpeg/ffmpeg.exe",
   tasks: [
     {
       app: "live",
