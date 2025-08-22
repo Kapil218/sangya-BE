@@ -14,7 +14,7 @@ import dislikeRoute from "./routes/dislike.route.js";
 import subscriptionRoute from "./routes/subscription.routes.js";
 import playlistRoute from "./routes/playlist.routes.js";
 import historyRoute from "./routes/history.routes.js";
-
+import streamRoute from "./routes/stream.routes.js";
 import bodyParser from "body-parser";
 import multer from "multer";
 
@@ -35,6 +35,9 @@ app.use(
       "http://localhost:5173",
       "http://192.168.0.101:5173",
       "https://sangya.web.app",
+      "httdp://10.253.107.237:5173/",
+      // "*",
+      "https://respond-indicating-disks-billion.trycloudflare.com",
     ],
     credentials: true,
   })
@@ -92,6 +95,7 @@ app.use("/api/v1/dislikes", dislikeRoute);
 app.use("/api/v1/subscriptions", subscriptionRoute);
 app.use("/api/v1/playlists", playlistRoute);
 app.use("/api/v1/watchHistory", historyRoute);
+app.use("/api/v1/stream", streamRoute);
 
 // unhandled routes
 app.all("*", (req, res, next) => {

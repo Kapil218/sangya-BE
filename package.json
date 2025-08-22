@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "dev:rmtp": "cd ./nginx && nginx.exe"
   },
   "author": "kapil",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "cloudinary": "^2.2.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "express-mongo-sanitize": "^2.2.0",
@@ -35,12 +37,13 @@
     "mongoose": "^8.4.3",
     "mongoose-aggregate-paginate-v2": "^1.1.0",
     "multer": "^1.4.5-lts.1",
-    "node-media-server": "^2.2.2",
+    "node-media-server": "^4.0.21",
     "node-pre-gyp": "^0.17.0",
     "sdp-transform": "^2.14.1",
     "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3",
     "uuid": "^9.0.0",
+    "wrtc": "^0.4.7",
     "xss-clean": "^0.1.4"
   }
 }

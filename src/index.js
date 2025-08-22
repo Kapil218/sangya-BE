@@ -3,9 +3,9 @@ import connectDB from "./db/index.js";
 import { app } from "./app.js";
 import http from "http";
 import cors from "cors";
-import { Server } from "socket.io";
+import { Server as SocketIOServer } from "socket.io";
+import initSockets from "./sockets/index.js";
 
-// Enable CORS for localhost:5173
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://192.168.0.101:5173"],
@@ -16,65 +16,22 @@ app.use(
 
 // Create an HTTP server to work alongside Express app
 const server = http.createServer(app);
-
-const io = new Server(server, {
+// const io = new SocketIOServer(server);
+const io = new SocketIOServer(server, {
   cors: {
-    origin: ["https://web-apps-732ac.web.app", "http://192.168.0.101:5173"], // Allow your frontend and local network IP
+    origin: "http://localhost:5173", // your frontend
     methods: ["GET", "POST"],
-    credentials: true,
+    credentials: true, // if using cookies/auth
   },
 });
-
-const streams = {}; // Store stream info
-
-// Handle Socket.IO connections
-io.on("connection", (socket) => {
-  console.log("New user connected:", socket.id);
-
-  // Handle WebRTC signaling
-  socket.on("offer", (offer, room) => {
-    console.log(`Offer received from ${socket.id} for room ${room}`);
-    console.log("Offer:", offer);
-    streams[room] = { offer, socketId: socket.id }; // Store stream info
-    console.log(`Stream started by ${socket.id} in room ${room}`); // Log stream info
-    socket.to(room).emit("offer", offer);
-  });
-
-  socket.on("answer", (answer, room) => {
-    console.log(`Answer received from ${socket.id} for room ${room}`);
-    console.log("Answer:", answer);
-    socket.to(room).emit("answer", answer);
-  });
-
-  socket.on("ice-candidate", (candidate, room) => {
-    console.log(`ICE candidate received from ${socket.id} for room ${room}`);
-    console.log("ICE Candidate:", candidate);
-    socket.to(room).emit("ice-candidate", candidate);
-  });
-
-  // Room handling
-  socket.on("join-room", (room) => {
-    socket.join(room);
-    console.log(`User ${socket.id} joined room ${room}`);
-  });
-
-  socket.on("disconnect", (reason) => {
-    console.log(`Socket ${socket.id} disconnected:`, reason);
-    // Remove stream info if the streamer disconnects
-    for (const room in streams) {
-      if (streams[room].socketId === socket.id) {
-        delete streams[room];
-        socket.to(room).emit("stream-ended", "Streamer has disconnected");
-      }
-    }
-  });
-});
+initSockets(io);
 
 connectDB()
   .then(() => {
     server.listen(process.env.PORT || 8000, "0.0.0.0", () => {
       console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
     });
+    // startNodeMediaServer();
   })
   .catch((err) => {
     console.log("MONGO db connection failed !!! ", err);

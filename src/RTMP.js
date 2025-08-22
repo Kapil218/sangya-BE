@@ -1,5 +1,6 @@
-import ffmpegPath from "ffmpeg-static"; // Add this line
+import ffmpegPath from "ffmpeg-static";
 import NodeMediaServer from "node-media-server";
+
 // Check if ffmpegPath is resolved
 if (!ffmpegPath) {
   console.error(
@@ -9,18 +10,14 @@ if (!ffmpegPath) {
 }
 console.log(`🔍 FFmpeg is located at: ${ffmpegPath}`);
 
-// Load environment variables
-dotenv.config({
-  path: "./.env",
-});
-
-// Configuration for NodeMediaServer
+// HTTP config
 const httpConfig = {
-  port: 8080,
+  port: 8080, // change to 8001 if you want
   allow_origin: "*",
   mediaroot: "./media",
 };
 
+// RTMP config
 const rtmpConfig = {
   port: 1935,
   chunk_size: 60000,
@@ -29,26 +26,28 @@ const rtmpConfig = {
   ping_timeout: 60,
 };
 
+// Transformation / FLV config
 const transformationConfig = {
-  ffmpeg: ffmpegPath, // Use the resolved ffmpeg-static path
-  // ffmpeg: "./ffmpeg/ffmpeg.exe",
+  ffmpeg: ffmpegPath,
   tasks: [
     {
       app: "live",
-      hls: true,
-      hlsFlags: "[hls_time=2:hls_list_size=3:hls_flags=delete_segments]",
-      hlsKeep: false,
+      flv: true, // 👈 enable FLV
+      hls: true, // disable HLS if you only want FLV
+      dash: true, // disable DASH
     },
   ],
-  MediaRoot: "./media",
 };
+
 const config = {
   http: httpConfig,
   rtmp: rtmpConfig,
   trans: transformationConfig,
 };
-const nms = new NodeMediaServer(config);
 
-export function startNodeMediaServer() {
-  nms.run();
-}
+const nms = new NodeMediaServer(config);
+nms.run();
+
+console.log(
+  "Node-Media-Server running on RTMP 1935 and HTTP 8080 (FLV enabled)"
+);
