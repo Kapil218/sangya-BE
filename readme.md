@@ -26,7 +26,19 @@ npm install
 
 ## 2) Environment Setup
 
-Create a `.env` file in project root (or copy values from `.env.example`).
+Create a `.env` file in project root using `example.env`.
+
+Windows (PowerShell):
+
+```powershell
+Copy-Item example.env .env
+```
+
+macOS/Linux:
+
+```bash
+cp example.env .env
+```
 
 Required keys:
 
