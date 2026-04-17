@@ -12,20 +12,24 @@ const uploadOnCloudinary = async (localFilePath, resourceType) => {
     if (!localFilePath) return null;
 
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: resourceType, // Use 'image' or 'video' based on the file type
+      resource_type: resourceType || "auto", // Use 'image' or 'video' based on the file type
       transformation:
         resourceType === "video" ? [{ streaming_profile: "hd" }] : undefined,
     });
 
     // Remove the file from local storage after successful upload
-    fs.unlinkSync(localFilePath);
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
+    }
 
     return response;
   } catch (error) {
     console.error(`Cloudinary upload error for ${resourceType}:`, error);
 
     // Optionally remove the file in case of an error as well
-    fs.unlinkSync(localFilePath);
+    if (localFilePath && fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
+    }
 
     return null; // or handle the error as needed
   }

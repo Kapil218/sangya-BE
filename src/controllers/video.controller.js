@@ -58,6 +58,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Video file is required");
   }
   const videoFile = await uploadOnCloudinary(videoLocalPath, "video");
+  if (!videoFile?.public_id) {
+    throw new ApiError(500, "Video upload failed. Please try again.");
+  }
 
   // Uploading thumbnail
   const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
@@ -65,6 +68,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Thumbnail file is required");
   }
   const thumbnail = await uploadOnCloudinary(thumbnailLocalPath, "image");
+  if (!thumbnail?.url) {
+    throw new ApiError(500, "Thumbnail upload failed. Please try again.");
+  }
 
   // Generate URLs for different video qualities
   const videoUrls = generateVideoUrls(videoFile.public_id);
